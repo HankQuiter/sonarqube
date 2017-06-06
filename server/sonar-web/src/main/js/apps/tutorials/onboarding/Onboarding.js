@@ -21,6 +21,7 @@
 import React from 'react';
 import TokenStep from './TokenStep';
 import OrganizationStep from './OrganizationStep';
+import AnalysisStep from './AnalysisStep';
 import { translate } from '../../../helpers/l10n';
 import handleRequiredAuthentication from '../../../app/utils/handleRequiredAuthentication';
 import './styles.css';
@@ -32,6 +33,7 @@ type Props = {
 };
 
 type State = {
+  organization?: string,
   step: string
 };
 
@@ -41,7 +43,8 @@ export default class Onboarding extends React.PureComponent {
 
   constructor(props: Props) {
     super(props);
-    this.state = { step: props.organizationsEnabled ? 'organization' : 'token' };
+    // this.state = { step: props.organizationsEnabled ? 'organization' : 'token' };
+    this.state = { step: 'analysis' };
   }
 
   componentDidMount() {
@@ -51,11 +54,11 @@ export default class Onboarding extends React.PureComponent {
   }
 
   handleTokenDone = (/* token: string */) => {
-    this.setState({ step: '' });
+    this.setState({ step: 'analysis' });
   };
 
-  handleOrganizationDone = () => {
-    this.setState({ step: 'token' });
+  handleOrganizationDone = (organization: string) => {
+    this.setState({ organization, step: 'token' });
   };
 
   render() {
@@ -90,6 +93,8 @@ export default class Onboarding extends React.PureComponent {
           open={step === 'token'}
           stepNumber={organizationsEnabled ? 2 : 1}
         />
+
+        <AnalysisStep open={step === 'analysis'} stepNumber={organizationsEnabled ? 3 : 2} />
       </div>
     );
   }
