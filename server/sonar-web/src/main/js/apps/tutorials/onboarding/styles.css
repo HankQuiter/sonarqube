@@ -25,3 +25,12 @@
 .onboarding-step-open .onboarding-step-number {
   background-color: #236a97;
 }
+
+.onboarding-command {
+  margin: 8px 0;
+  padding: 15px;
+  border-radius: 2px;
+  background: #404040;
+  color: #f0f0f0;
+  overflow: auto;
+}

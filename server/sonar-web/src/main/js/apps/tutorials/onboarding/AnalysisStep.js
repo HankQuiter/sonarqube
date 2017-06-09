@@ -22,6 +22,12 @@ import React from 'react';
 import Step from './Step';
 import LanguageStep from './LanguageStep';
 import type { Result } from './LanguageStep';
+import JavaMaven from './commands/JavaMaven';
+import JavaGradle from './commands/JavaGradle';
+import DotNet from './commands/DotNet';
+import Msvc from './commands/Msvc';
+import ClangGCC from './commands/ClangGCC';
+import Other from './commands/Other';
 import { translate } from '../../../helpers/l10n';
 
 type Props = {
@@ -47,6 +53,8 @@ export default class AnalysisStep extends React.PureComponent {
     this.setState({ result: undefined });
   };
 
+  getHost = () => window.location.origin + window.baseUrl;
+
   renderForm = () => {
     return (
       <div className="boxed-group-inner">
@@ -55,12 +63,106 @@ export default class AnalysisStep extends React.PureComponent {
             <LanguageStep onDone={this.handleLanguageSelect} onReset={this.handleLanguageReset} />
           </div>
           <div className="flex-column flex-column-half">
-            {this.state.result != null && <i className="icon-check" />}
+            {this.renderCommand()}
           </div>
         </div>
       </div>
     );
   };
+
+  renderFormattedCommand = (...lines: Array<string>) => (
+    <pre>{lines.join(' ' + '\\' + '\n' + '  ')}</pre>
+  );
+
+  renderCommand = () => {
+    const { result } = this.state;
+
+    if (!result) {
+      return null;
+    }
+
+    if (result.language === 'java') {
+      return result.javaBuild === 'maven'
+        ? this.renderCommandForMaven()
+        : this.renderCommandForGradle();
+    } else if (result.language === 'dotnet') {
+      return this.renderCommandForDotNet();
+    } else if (result.language === 'c-family') {
+      return result.cFamilyCompiler === 'msvc'
+        ? this.renderCommandForMSVC()
+        : this.renderCommandForClangGCC();
+    } else {
+      return this.renderCommandForOther();
+    }
+  };
+
+  renderCommandForMaven = () => (
+    <JavaMaven
+      host={this.getHost()}
+      organization={this.props.organization}
+      token={this.props.token}
+    />
+  );
+
+  renderCommandForGradle = () => (
+    <JavaGradle
+      host={this.getHost()}
+      organization={this.props.organization}
+      token={this.props.token}
+    />
+  );
+
+  renderCommandForDotNet = () => {
+    const { result } = this.state;
+    return (
+      result != null &&
+      result.language === 'dotnet' &&
+      <DotNet
+        host={this.getHost()}
+        organization={this.props.organization}
+        projectKey={result.projectKey}
+        token={this.props.token}
+      />
+    );
+  };
+
+  renderCommandForMSVC = () => {
+    const { result } = this.state;
+    return (
+      result != null &&
+      result.language === 'c-family' &&
+      <Msvc
+        host={this.getHost()}
+        organization={this.props.organization}
+        projectKey={result.projectKey}
+        token={this.props.token}
+      />
+    );
+  };
+
+  renderCommandForClangGCC = () => (
+    <ClangGCC
+      host={this.getHost()}
+      organization={this.props.organization}
+      // $FlowFixMe
+      os={this.state.result.os}
+      // $FlowFixMe
+      projectKey={this.state.result.projectKey}
+      token={this.props.token}
+    />
+  );
+
+  renderCommandForOther = () => (
+    <Other
+      host={this.getHost()}
+      organization={this.props.organization}
+      // $FlowFixMe
+      os={this.state.result.os}
+      // $FlowFixMe
+      projectKey={this.state.result.projectKey}
+      token={this.props.token}
+    />
+  );
 
   renderResult = () => null;
 
