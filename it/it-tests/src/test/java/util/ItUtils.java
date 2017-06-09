@@ -488,6 +488,10 @@ public class ItUtils {
     }
   }
 
+  public static void expectBadRequestError(Runnable runnable) {
+    expectHttpError(runnable, 400);
+  }
+
   /**
    * Missing permissions
    */

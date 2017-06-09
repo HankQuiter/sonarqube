@@ -31,7 +31,7 @@ import it.projectSearch.SearchProjectsTest;
 import it.organization.RootUserOnOrganizationTest;
 import it.qualityProfile.CustomQualityProfilesTest;
 import it.qualityProfile.OrganizationQualityProfilesPageTest;
-import it.qualityProfile.QualityProfilesBuiltInTest;
+import it.qualityProfile.BuiltInQualityProfilesTest;
 import it.uiExtension.OrganizationUiExtensionsTest;
 import it.user.OrganizationIdentityProviderTest;
 import org.junit.BeforeClass;
@@ -54,7 +54,7 @@ import static util.ItUtils.xooPlugin;
   OrganizationTest.class,
   RootUserOnOrganizationTest.class,
   OrganizationUiExtensionsTest.class,
-  QualityProfilesBuiltInTest.class,
+  BuiltInQualityProfilesTest.class,
   CustomQualityProfilesTest.class,
   BillingTest.class,
   IssueTagsTest.class,
