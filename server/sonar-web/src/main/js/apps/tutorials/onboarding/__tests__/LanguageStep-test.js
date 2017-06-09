@@ -55,7 +55,7 @@ it('selects c#', () => {
 
 it('selects c-family', () => {
   const onDone = jest.fn();
-  const wrapper = shallow(<LanguageStep onDone={onDone} onReset={jest.fn()} />);
+  const wrapper = shallow(<LanguageStep onDone={onDone} onReset={jest.fn()} sonarCloud={true} />);
 
   wrapper.find('RadioToggle').prop('onCheck')('c-family');
   wrapper.update();

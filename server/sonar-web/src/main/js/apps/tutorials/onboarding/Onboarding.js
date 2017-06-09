@@ -99,6 +99,7 @@ export default class Onboarding extends React.PureComponent {
         <AnalysisStep
           organization={this.state.organization}
           open={step === 'analysis'}
+          sonarCloud={sonarCloud}
           stepNumber={stepNumber}
           token={token}
         />

@@ -30,12 +30,13 @@ import ClangGCC from './commands/ClangGCC';
 import Other from './commands/Other';
 import { translate } from '../../../helpers/l10n';
 
-type Props = {
+type Props = {|
   open: boolean,
   organization?: string,
+  sonarCloud: boolean,
   stepNumber: number,
   token: string
-};
+|};
 
 type State = {
   result?: Result
@@ -60,7 +61,11 @@ export default class AnalysisStep extends React.PureComponent {
       <div className="boxed-group-inner">
         <div className="flex-columns">
           <div className="flex-column flex-column-half bordered-right">
-            <LanguageStep onDone={this.handleLanguageSelect} onReset={this.handleLanguageReset} />
+            <LanguageStep
+              onDone={this.handleLanguageSelect}
+              onReset={this.handleLanguageReset}
+              sonarCloud={this.props.sonarCloud}
+            />
           </div>
           <div className="flex-column flex-column-half">
             {this.renderCommand()}

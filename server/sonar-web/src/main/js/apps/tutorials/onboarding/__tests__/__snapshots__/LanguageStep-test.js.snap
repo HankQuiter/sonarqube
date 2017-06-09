@@ -23,10 +23,6 @@ exports[`selects c# 1`] = `
             "value": "dotnet",
           },
           Object {
-            "label": "onboarding.language.c-family",
-            "value": "c-family",
-          },
-          Object {
             "label": "onboarding.language.other",
             "value": "other",
           },
@@ -396,10 +392,6 @@ exports[`selects java 1`] = `
             "value": "dotnet",
           },
           Object {
-            "label": "onboarding.language.c-family",
-            "value": "c-family",
-          },
-          Object {
             "label": "onboarding.language.other",
             "value": "other",
           },
@@ -459,10 +451,6 @@ exports[`selects java 2`] = `
           Object {
             "label": "onboarding.language.dotnet",
             "value": "dotnet",
-          },
-          Object {
-            "label": "onboarding.language.c-family",
-            "value": "c-family",
           },
           Object {
             "label": "onboarding.language.other",
@@ -526,10 +514,6 @@ exports[`selects java 3`] = `
             "value": "dotnet",
           },
           Object {
-            "label": "onboarding.language.c-family",
-            "value": "c-family",
-          },
-          Object {
             "label": "onboarding.language.other",
             "value": "other",
           },
@@ -589,10 +573,6 @@ exports[`selects other 1`] = `
           Object {
             "label": "onboarding.language.dotnet",
             "value": "dotnet",
-          },
-          Object {
-            "label": "onboarding.language.c-family",
-            "value": "c-family",
           },
           Object {
             "label": "onboarding.language.other",
@@ -658,10 +638,6 @@ exports[`selects other 2`] = `
           Object {
             "label": "onboarding.language.dotnet",
             "value": "dotnet",
-          },
-          Object {
-            "label": "onboarding.language.c-family",
-            "value": "c-family",
           },
           Object {
             "label": "onboarding.language.other",

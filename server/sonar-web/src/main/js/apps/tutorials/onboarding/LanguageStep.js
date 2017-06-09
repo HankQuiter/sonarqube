@@ -23,11 +23,12 @@ import NewProjectForm from './NewProjectForm';
 import RadioToggle from '../../../components/controls/RadioToggle';
 import { translate } from '../../../helpers/l10n';
 
-type Props = {
+type Props = {|
   onDone: (result: Result) => void,
   onReset: () => void,
-  organization?: string
-};
+  organization?: string,
+  sonarCloud: boolean
+|};
 
 type State = {
   language?: string,
@@ -41,6 +42,9 @@ export type Result = State;
 
 export default class LanguageStep extends React.PureComponent {
   props: Props;
+
+  static defaultProps = { sonarCloud: false };
+
   state: State = {};
 
   isConfigured = () => {
@@ -154,6 +158,10 @@ export default class LanguageStep extends React.PureComponent {
           (this.state.cFamilyCompiler === 'clang-gcc' && this.state.os != null))) ||
       (this.state.language === 'other' && this.state.os !== undefined);
 
+    const languages = this.props.sonarCloud
+      ? ['java', 'dotnet', 'c-family', 'other']
+      : ['java', 'dotnet', 'other'];
+
     return (
       <div>
         <div>
@@ -161,7 +169,7 @@ export default class LanguageStep extends React.PureComponent {
           <RadioToggle
             name="language"
             onCheck={this.handleLanguageChange}
-            options={['java', 'dotnet', 'c-family', 'other'].map(language => ({
+            options={languages.map(language => ({
               label: translate('onboarding.language', language),
               value: language
             }))}
