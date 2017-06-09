@@ -22,19 +22,17 @@ package it.organization;
 import com.sonar.orchestrator.Orchestrator;
 import it.Category6Suite;
 import java.sql.SQLException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.sonarqube.ws.WsRoot;
 import org.sonarqube.ws.client.HttpException;
 import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.user.SearchRequest;
-import org.sonarqube.ws.client.user.UsersService;
+import util.OrganizationRule;
 import util.user.UserRule;
 
-import static it.Category6Suite.enableOrganizationsSupport;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static util.ItUtils.newAdminWsClient;
@@ -42,37 +40,21 @@ import static util.ItUtils.newUserWsClient;
 
 public class RootUserOnOrganizationTest {
 
+  private static Orchestrator orchestrator = Category6Suite.ORCHESTRATOR;
+  private static OrganizationRule organizationRule = new OrganizationRule(orchestrator);
+
   @ClassRule
-  public static Orchestrator orchestrator = Category6Suite.ORCHESTRATOR;
+  public static TestRule chain = RuleChain.outerRule(orchestrator)
+    .around(organizationRule);
 
-  private static UserRule userRule;
-
-  @Before
-  public void start() {
-    userRule = UserRule.from(orchestrator);
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    UsersService service = newAdminWsClient(orchestrator).users();
-    service.search(SearchRequest.builder().build()).getUsersList()
-      .stream()
-      .filter(u -> !u.getLogin().equals("admin"))
-      .forEach(u -> {
-        userRule.deactivateUsers(u.getLogin());
-      });
-  }
-
-  @BeforeClass
-  public static void enableOrganizations() throws Exception {
-    enableOrganizationsSupport();
-  }
+  @Rule
+  public UserRule userRule = UserRule.from(orchestrator);
 
   @Test
   public void system_administrator_is_flagged_as_root_when_he_enables_organization_support() {
     assertThat(newAdminWsClient(orchestrator).rootService().search().getRootsList())
       .extracting(WsRoot.Root::getLogin)
-      .containsOnly(UserRule.ADMIN_LOGIN);
+      .containsExactly(UserRule.ADMIN_LOGIN);
   }
 
   @Test
@@ -112,7 +94,7 @@ public class RootUserOnOrganizationTest {
     // root2 can unset root itself as it's not the last root
     root2WsClient.rootService().unsetRoot("root2");
   }
-  
+
   private static void verifyHttpError(Runnable runnable, int expectedErrorCode) {
     try {
       runnable.run();

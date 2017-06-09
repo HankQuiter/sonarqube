@@ -59,6 +59,8 @@ import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static util.ItUtils.deleteOrganizations;
+import static util.ItUtils.expectForbiddenError;
+import static util.ItUtils.expectNotFoundError;
 import static util.ItUtils.newAdminWsClient;
 import static util.ItUtils.newUserWsClient;
 import static util.ItUtils.newWsClient;
@@ -262,7 +264,7 @@ public class OrganizationTest {
       .build();
     OrganizationService fooUserOrganizationService = newUserWsClient(orchestrator, USER_LOGIN, USER_LOGIN).organizations();
 
-    expect403HttpError(() -> fooUserOrganizationService.create(createWsRequest));
+    expectForbiddenError(() -> fooUserOrganizationService.create(createWsRequest));
 
     userRule.setRoot(USER_LOGIN);
     assertThat(fooUserOrganizationService.create(createWsRequest).getOrganization().getKey()).isEqualTo("bla-bla");
@@ -270,7 +272,7 @@ public class OrganizationTest {
     // delete org, attempt recreate when no root anymore and ensure it can't anymore
     fooUserOrganizationService.delete("bla-bla");
     userRule.unsetRoot(USER_LOGIN);
-    expect403HttpError(() -> fooUserOrganizationService.create(createWsRequest));
+    expectForbiddenError(() -> fooUserOrganizationService.create(createWsRequest));
   }
 
   @Test
@@ -371,7 +373,7 @@ public class OrganizationTest {
 
     adminOrganizationService.delete(KEY);
 
-    expect404HttpError(() -> searchSampleProject(KEY, componentsService));
+    expectNotFoundError(() -> searchSampleProject(KEY, componentsService));
     assertThatOrganizationDoesNotExit(KEY);
   }
 
@@ -403,24 +405,6 @@ public class OrganizationTest {
         .setOrganization(organizationKey)
         .setQualifiers(singletonList("TRK"))
         .setQuery("sample"));
-  }
-
-  private void expect403HttpError(Runnable runnable) {
-    try {
-      runnable.run();
-      fail("Ws call should have failed");
-    } catch (HttpException e) {
-      assertThat(e.code()).isEqualTo(403);
-    }
-  }
-
-  private void expect404HttpError(Runnable runnable) {
-    try {
-      runnable.run();
-      fail("Ws call should have failed");
-    } catch (HttpException e) {
-      assertThat(e.code()).isEqualTo(404);
-    }
   }
 
   private void assertThatOrganizationDoesNotExit(String organizationKey) {

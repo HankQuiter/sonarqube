@@ -57,6 +57,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.junit.Assert;
 import org.sonar.wsclient.base.HttpException;
 import org.sonar.wsclient.issue.Issue;
 import org.sonar.wsclient.issue.IssueClient;
@@ -484,6 +485,33 @@ public class ItUtils {
         .execute();
     } catch (IOException e) {
       throw Throwables.propagate(e);
+    }
+  }
+
+  /**
+   * Missing permissions
+   */
+  public static void expectForbiddenError(Runnable runnable) {
+    expectHttpError(runnable, 403);
+  }
+
+  /**
+   * Not authenticated
+   */
+  public static void expectUnauthorizedError(Runnable runnable) {
+    expectHttpError(runnable, 401);
+  }
+
+  public static void expectNotFoundError(Runnable runnable) {
+    expectHttpError(runnable, 404);
+  }
+
+  private static void expectHttpError(Runnable runnable, int expectedCode) {
+    try {
+      runnable.run();
+      Assert.fail("Ws call should have failed");
+    } catch (org.sonarqube.ws.client.HttpException e) {
+      assertThat(e.code()).isEqualTo(expectedCode);
     }
   }
 }

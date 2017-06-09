@@ -24,20 +24,19 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarScanner;
 import it.Category6Suite;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.sonarqube.ws.Organizations;
 import org.sonarqube.ws.client.PostRequest;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.organization.CreateWsRequest;
 import pageobjects.Navigation;
+import util.OrganizationRule;
 
 import static com.codeborne.selenide.Selenide.$;
-import static it.Category6Suite.enableOrganizationsSupport;
-import static util.ItUtils.deleteOrganizations;
 import static util.ItUtils.newAdminWsClient;
 import static util.ItUtils.projectDir;
 import static util.selenium.Selenese.runSelenese;
@@ -45,21 +44,19 @@ import static util.selenium.Selenese.runSelenese;
 public class OrganizationQualityProfilesPageTest {
 
   private static WsClient adminWsClient;
-  private static final String ORGANIZATION = "test-org";
 
   @ClassRule
   public static Orchestrator orchestrator = Category6Suite.ORCHESTRATOR;
 
-  @BeforeClass
-  public static void setUp() {
-    adminWsClient = newAdminWsClient(orchestrator);
-    enableOrganizationsSupport();
-    createOrganization();
-  }
+  @Rule
+  public OrganizationRule organizationRule = new OrganizationRule(orchestrator);
 
-  @AfterClass
-  public static void tearDown() throws Exception {
-    deleteOrganizations(orchestrator);
+  private static Organizations.Organization organization;
+
+  @Before
+  public void setUp() {
+    adminWsClient = newAdminWsClient(orchestrator);
+    organization = adminWsClient.organizations().create(new CreateWsRequest.Builder().setKey("foo").setName("Foo").build()).getOrganization();
   }
 
   @Before
@@ -104,10 +101,10 @@ public class OrganizationQualityProfilesPageTest {
   @Test
   public void testNotFound() {
     Navigation nav = Navigation.get(orchestrator);
-    nav.open("/organizations/" + ORGANIZATION + "/quality_profiles/show?key=unknown");
+    nav.open("/organizations/" + organization.getKey() + "/quality_profiles/show?key=unknown");
     $(".quality-profile-not-found").should(Condition.visible);
 
-    nav.open("/organizations/" + ORGANIZATION + "/quality_profiles/show?language=xoo&name=unknown");
+    nav.open("/organizations/" + organization.getKey() + "/quality_profiles/show?language=xoo&name=unknown");
     $(".quality-profile-not-found").should(Condition.visible);
   }
 
@@ -160,7 +157,7 @@ public class OrganizationQualityProfilesPageTest {
       new PostRequest("api/qualityprofiles/create")
         .setParam("language", language)
         .setParam("name", name)
-        .setParam("organization", ORGANIZATION));
+        .setParam("organization", organization.getKey()));
   }
 
   private static void inheritProfile(String language, String name, String parentName) {
@@ -169,12 +166,12 @@ public class OrganizationQualityProfilesPageTest {
         .setParam("language", language)
         .setParam("profileName", name)
         .setParam("parentName", parentName)
-        .setParam("organization", ORGANIZATION));
+        .setParam("organization", organization.getKey()));
   }
 
   private static void analyzeProject(String path) {
     orchestrator.executeBuild(SonarScanner.create(projectDir(path)).setProperties(
-      "sonar.organization", ORGANIZATION,
+      "sonar.organization", organization.getKey(),
       "sonar.login", "admin",
       "sonar.password", "admin"));
   }
@@ -184,7 +181,7 @@ public class OrganizationQualityProfilesPageTest {
       new PostRequest("api/qualityprofiles/add_project")
         .setParam("language", language)
         .setParam("profileName", profileName)
-        .setParam("organization", ORGANIZATION)
+        .setParam("organization", organization.getKey())
         .setParam("projectKey", projectKey));
   }
 
@@ -193,7 +190,7 @@ public class OrganizationQualityProfilesPageTest {
       new PostRequest("api/qualityprofiles/delete")
         .setParam("language", language)
         .setParam("profileName", name)
-        .setParam("organization", ORGANIZATION));
+        .setParam("organization", organization.getKey()));
   }
 
   private static void setDefault(String language, String name) {
@@ -201,10 +198,7 @@ public class OrganizationQualityProfilesPageTest {
       new PostRequest("api/qualityprofiles/set_default")
         .setParam("language", language)
         .setParam("profileName", name)
-        .setParam("organization", ORGANIZATION));
+        .setParam("organization", organization.getKey()));
   }
 
-  private static void createOrganization() {
-    adminWsClient.organizations().create(new CreateWsRequest.Builder().setKey(ORGANIZATION).setName(ORGANIZATION).build());
-  }
 }

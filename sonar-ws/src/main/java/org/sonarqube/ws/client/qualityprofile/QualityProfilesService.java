@@ -106,6 +106,7 @@ public class QualityProfilesService extends BaseService {
 
   public CreateWsResponse create(CreateRequest request) {
     PostRequest postRequest = new PostRequest(path(ACTION_CREATE))
+      .setParam(PARAM_ORGANIZATION, request.getOrganizationKey())
       .setParam(PARAM_LANGUAGE, request.getLanguage())
       .setParam(PARAM_PROFILE_NAME, request.getProfileName());
     return call(postRequest, CreateWsResponse.parser());

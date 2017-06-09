@@ -29,6 +29,7 @@ import it.organization.OrganizationTest;
 import it.projectSearch.LeakProjectsPageTest;
 import it.projectSearch.SearchProjectsTest;
 import it.organization.RootUserOnOrganizationTest;
+import it.qualityProfile.CustomQualityProfilesTest;
 import it.qualityProfile.OrganizationQualityProfilesPageTest;
 import it.qualityProfile.QualityProfilesBuiltInTest;
 import it.uiExtension.OrganizationUiExtensionsTest;
@@ -54,6 +55,7 @@ import static util.ItUtils.xooPlugin;
   RootUserOnOrganizationTest.class,
   OrganizationUiExtensionsTest.class,
   QualityProfilesBuiltInTest.class,
+  CustomQualityProfilesTest.class,
   BillingTest.class,
   IssueTagsTest.class,
   LeakProjectsPageTest.class,
