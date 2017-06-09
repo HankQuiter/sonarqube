@@ -33,12 +33,12 @@ it('selects java', () => {
   wrapper.find('RadioToggle').at(1).prop('onCheck')('maven');
   wrapper.update();
   expect(wrapper).toMatchSnapshot();
-  expect(onDone).toBeCalledWith({ language: 'java', javaBuild: 'maven' });
+  expect(onDone).lastCalledWith({ language: 'java', javaBuild: 'maven' });
 
   wrapper.find('RadioToggle').at(1).prop('onCheck')('gradle');
   wrapper.update();
   expect(wrapper).toMatchSnapshot();
-  expect(onDone).toBeCalledWith({ language: 'java', javaBuild: 'gradle' });
+  expect(onDone).lastCalledWith({ language: 'java', javaBuild: 'gradle' });
 });
 
 it('selects c#', () => {
@@ -48,7 +48,9 @@ it('selects c#', () => {
   wrapper.find('RadioToggle').prop('onCheck')('dotnet');
   wrapper.update();
   expect(wrapper).toMatchSnapshot();
-  expect(onDone).toBeCalledWith({ language: 'dotnet' });
+
+  wrapper.find('NewProjectForm').prop('onDone')('project-foo');
+  expect(onDone).lastCalledWith({ language: 'dotnet', projectKey: 'project-foo' });
 });
 
 it('selects c-family', () => {
@@ -62,12 +64,29 @@ it('selects c-family', () => {
   wrapper.find('RadioToggle').at(1).prop('onCheck')('msvc');
   wrapper.update();
   expect(wrapper).toMatchSnapshot();
-  expect(onDone).toBeCalledWith({ language: 'c-family', cFamilyCompiler: 'msvc' });
+
+  wrapper.find('NewProjectForm').prop('onDone')('project-foo');
+  expect(onDone).lastCalledWith({
+    language: 'c-family',
+    cFamilyCompiler: 'msvc',
+    projectKey: 'project-foo'
+  });
 
   wrapper.find('RadioToggle').at(1).prop('onCheck')('clang-gcc');
   wrapper.update();
   expect(wrapper).toMatchSnapshot();
-  expect(onDone).toBeCalledWith({ language: 'c-family', cFamilyCompiler: 'clang-gcc' });
+
+  wrapper.find('RadioToggle').at(2).prop('onCheck')('linux');
+  wrapper.update();
+  expect(wrapper).toMatchSnapshot();
+
+  wrapper.find('NewProjectForm').prop('onDone')('project-foo');
+  expect(onDone).lastCalledWith({
+    language: 'c-family',
+    cFamilyCompiler: 'clang-gcc',
+    os: 'linux',
+    projectKey: 'project-foo'
+  });
 });
 
 it('selects other', () => {
@@ -82,6 +101,6 @@ it('selects other', () => {
   wrapper.update();
   expect(wrapper).toMatchSnapshot();
 
-  wrapper.find('ProjectKeyStep').prop('onDone')('project-foo');
-  expect(onDone).toBeCalledWith({ language: 'other', os: 'mac', projectKey: 'project-foo' });
+  wrapper.find('NewProjectForm').prop('onDone')('project-foo');
+  expect(onDone).lastCalledWith({ language: 'other', os: 'mac', projectKey: 'project-foo' });
 });

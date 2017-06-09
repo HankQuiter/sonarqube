@@ -26,7 +26,9 @@ import { translate } from '../../../helpers/l10n';
 
 type Props = {
   open: boolean,
-  stepNumber: number
+  organization?: string,
+  stepNumber: number,
+  token: string
 };
 
 type State = {
@@ -49,7 +51,7 @@ export default class AnalysisStep extends React.PureComponent {
     return (
       <div className="boxed-group-inner">
         <div className="flex-columns">
-          <div className="flex-column flex-column-half">
+          <div className="flex-column flex-column-half bordered-right">
             <LanguageStep onDone={this.handleLanguageSelect} onReset={this.handleLanguageReset} />
           </div>
           <div className="flex-column flex-column-half">

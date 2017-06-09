@@ -19,20 +19,9 @@
  */
 // @flow
 import React from 'react';
-import ProjectKeyStep from './ProjectKeyStep';
+import NewProjectForm from './NewProjectForm';
 import RadioToggle from '../../../components/controls/RadioToggle';
 import { translate } from '../../../helpers/l10n';
-
-type LanguageOptions = 'java' | 'dotnet' | 'c-family' | 'other';
-type JavaBuildOptions = 'maven' | 'gradle';
-type CFamilyCompilerOptions = 'msvc' | 'clang-gcc';
-type OSOptions = 'linux' | 'win' | 'mac' | 'any';
-
-export type Result =
-  | { language: 'java', javaBuild: JavaBuildOptions }
-  | { language: 'dotnet' }
-  | { language: 'c-family', cFamilyCompiler: CFamilyCompilerOptions }
-  | { language: 'other', os: OSOptions, projectKey: string };
 
 type Props = {
   onDone: (result: Result) => void,
@@ -41,58 +30,60 @@ type Props = {
 };
 
 type State = {
-  language?: LanguageOptions,
-  javaBuild?: JavaBuildOptions,
-  cFamilyCompiler?: CFamilyCompilerOptions,
-  os?: OSOptions,
+  language?: string,
+  javaBuild?: string,
+  cFamilyCompiler?: string,
+  os?: string,
   projectKey?: string
 };
+
+export type Result = State;
 
 export default class LanguageStep extends React.PureComponent {
   props: Props;
   state: State = {};
 
-  handleLanguageChange = (language: LanguageOptions) => {
-    this.setState({
-      language,
-      javaBuild: undefined,
-      cFamilyCompiler: undefined,
-      os: undefined,
-      projectKey: undefined
-    });
-    if (language === 'dotnet') {
-      this.props.onDone({ language: 'dotnet' });
+  isConfigured = () => {
+    const { language, javaBuild, cFamilyCompiler, os, projectKey } = this.state;
+    const isJavaConfigured = language === 'java' && javaBuild != null;
+    const isDotNetConfigured = language === 'dotnet' && projectKey != null;
+    const isCFamilyConfigured =
+      language === 'c-family' && (cFamilyCompiler === 'msvc' || os != null) && projectKey != null;
+    const isOtherConfigured = language === 'other' && projectKey != null;
+
+    return isJavaConfigured || isDotNetConfigured || isCFamilyConfigured || isOtherConfigured;
+  };
+
+  handleChange = () => {
+    if (this.isConfigured()) {
+      this.props.onDone(this.state);
     } else {
       this.props.onReset();
     }
   };
 
-  handleJavaBuildChange = (javaBuild: JavaBuildOptions) => {
-    this.setState({ javaBuild });
-    this.props.onDone({ language: 'java', javaBuild });
+  handleLanguageChange = (language: string) => {
+    this.setState({ language }, this.handleChange);
   };
 
-  handleCFamilyCompilerChange = (cFamilyCompiler: CFamilyCompilerOptions) => {
-    this.setState({ cFamilyCompiler });
-    this.props.onDone({ language: 'c-family', cFamilyCompiler });
+  handleJavaBuildChange = (javaBuild: string) => {
+    this.setState({ javaBuild }, this.handleChange);
   };
 
-  handleOSChange = (os: OSOptions) => {
-    this.setState({ os });
+  handleCFamilyCompilerChange = (cFamilyCompiler: string) => {
+    this.setState({ cFamilyCompiler }, this.handleChange);
   };
 
-  handleProjectKeyChange = (event: { target: HTMLInputElement }) => {
-    this.setState({ projectKey: event.target.value });
+  handleOSChange = (os: string) => {
+    this.setState({ os }, this.handleChange);
   };
 
   handleProjectKeyDone = (projectKey: string) => {
-    if (this.state.os) {
-      this.props.onDone({
-        language: 'other',
-        os: this.state.os,
-        projectKey
-      });
-    }
+    this.setState({ projectKey }, this.handleChange);
+  };
+
+  handleProjectKeyDelete = () => {
+    this.setState({ projectKey: undefined }, this.handleChange);
   };
 
   renderJavaBuild = () => (
@@ -135,9 +126,9 @@ export default class LanguageStep extends React.PureComponent {
         {translate('onboarding.language.os')}
       </h4>
       <RadioToggle
-        name="c-family-compiler"
+        name="os"
         onCheck={this.handleOSChange}
-        options={['linux', 'win', 'mac', 'any'].map(os => ({
+        options={['linux', 'win', 'mac'].map(os => ({
           label: translate('onboarding.language.os', os),
           value: os
         }))}
@@ -147,14 +138,22 @@ export default class LanguageStep extends React.PureComponent {
   );
 
   renderProjectKey = () => (
-    <ProjectKeyStep
-      onDelete={this.props.onReset}
+    <NewProjectForm
+      onDelete={this.handleProjectKeyDelete}
       onDone={this.handleProjectKeyDone}
       organization={this.props.organization}
+      projectKey={this.state.projectKey}
     />
   );
 
   render() {
+    const shouldAskProjectKey =
+      this.state.language === 'dotnet' ||
+      (this.state.language === 'c-family' &&
+        (this.state.cFamilyCompiler === 'msvc' ||
+          (this.state.cFamilyCompiler === 'clang-gcc' && this.state.os != null))) ||
+      (this.state.language === 'other' && this.state.os !== undefined);
+
     return (
       <div>
         <div>
@@ -171,8 +170,10 @@ export default class LanguageStep extends React.PureComponent {
         </div>
         {this.state.language === 'java' && this.renderJavaBuild()}
         {this.state.language === 'c-family' && this.renderCFamilyCompiler()}
-        {this.state.language === 'other' && this.renderOS()}
-        {this.state.language === 'other' && this.state.os !== undefined && this.renderProjectKey()}
+        {((this.state.language === 'c-family' && this.state.cFamilyCompiler === 'clang-gcc') ||
+          this.state.language === 'other') &&
+          this.renderOS()}
+        {shouldAskProjectKey && this.renderProjectKey()}
       </div>
     );
   }

@@ -35,6 +35,10 @@ exports[`selects c# 1`] = `
       value="dotnet"
     />
   </div>
+  <NewProjectForm
+    onDelete={[Function]}
+    onDone={[Function]}
+  />
 </div>
 `;
 
@@ -165,6 +169,10 @@ exports[`selects c-family 2`] = `
       value="msvc"
     />
   </div>
+  <NewProjectForm
+    onDelete={[Function]}
+    onDone={[Function]}
+  />
 </div>
 `;
 
@@ -230,6 +238,138 @@ exports[`selects c-family 3`] = `
       value="clang-gcc"
     />
   </div>
+  <div
+    className="big-spacer-top"
+  >
+    <h4
+      className="spacer-bottom"
+    >
+      onboarding.language.os
+    </h4>
+    <RadioToggle
+      disabled={false}
+      name="os"
+      onCheck={[Function]}
+      options={
+        Array [
+          Object {
+            "label": "onboarding.language.os.linux",
+            "value": "linux",
+          },
+          Object {
+            "label": "onboarding.language.os.win",
+            "value": "win",
+          },
+          Object {
+            "label": "onboarding.language.os.mac",
+            "value": "mac",
+          },
+        ]
+      }
+      value={null}
+    />
+  </div>
+</div>
+`;
+
+exports[`selects c-family 4`] = `
+<div>
+  <div>
+    <h4
+      className="spacer-bottom"
+    >
+      onboarding.language
+    </h4>
+    <RadioToggle
+      disabled={false}
+      name="language"
+      onCheck={[Function]}
+      options={
+        Array [
+          Object {
+            "label": "onboarding.language.java",
+            "value": "java",
+          },
+          Object {
+            "label": "onboarding.language.dotnet",
+            "value": "dotnet",
+          },
+          Object {
+            "label": "onboarding.language.c-family",
+            "value": "c-family",
+          },
+          Object {
+            "label": "onboarding.language.other",
+            "value": "other",
+          },
+        ]
+      }
+      value="c-family"
+    />
+  </div>
+  <div
+    className="big-spacer-top"
+  >
+    <h4
+      className="spacer-bottom"
+    >
+      onboarding.language.c-family.compiler
+    </h4>
+    <RadioToggle
+      disabled={false}
+      name="c-family-compiler"
+      onCheck={[Function]}
+      options={
+        Array [
+          Object {
+            "label": "onboarding.language.c-family.compiler.msvc",
+            "value": "msvc",
+          },
+          Object {
+            "label": "onboarding.language.c-family.compiler.clang-gcc",
+            "value": "clang-gcc",
+          },
+        ]
+      }
+      value="clang-gcc"
+    />
+  </div>
+  <div
+    className="big-spacer-top"
+  >
+    <h4
+      className="spacer-bottom"
+    >
+      onboarding.language.os
+    </h4>
+    <RadioToggle
+      disabled={false}
+      name="os"
+      onCheck={[Function]}
+      options={
+        Array [
+          Object {
+            "label": "onboarding.language.os.linux",
+            "value": "linux",
+          },
+          Object {
+            "label": "onboarding.language.os.win",
+            "value": "win",
+          },
+          Object {
+            "label": "onboarding.language.os.mac",
+            "value": "mac",
+          },
+        ]
+      }
+      value="linux"
+    />
+  </div>
+  <NewProjectForm
+    onDelete={[Function]}
+    onDone={[Function]}
+    projectKey="project-foo"
+  />
 </div>
 `;
 
@@ -473,7 +613,7 @@ exports[`selects other 1`] = `
     </h4>
     <RadioToggle
       disabled={false}
-      name="c-family-compiler"
+      name="os"
       onCheck={[Function]}
       options={
         Array [
@@ -488,10 +628,6 @@ exports[`selects other 1`] = `
           Object {
             "label": "onboarding.language.os.mac",
             "value": "mac",
-          },
-          Object {
-            "label": "onboarding.language.os.any",
-            "value": "any",
           },
         ]
       }
@@ -546,7 +682,7 @@ exports[`selects other 2`] = `
     </h4>
     <RadioToggle
       disabled={false}
-      name="c-family-compiler"
+      name="os"
       onCheck={[Function]}
       options={
         Array [
@@ -562,16 +698,12 @@ exports[`selects other 2`] = `
             "label": "onboarding.language.os.mac",
             "value": "mac",
           },
-          Object {
-            "label": "onboarding.language.os.any",
-            "value": "any",
-          },
         ]
       }
       value="mac"
     />
   </div>
-  <ProjectKeyStep
+  <NewProjectForm
     onDelete={[Function]}
     onDone={[Function]}
   />

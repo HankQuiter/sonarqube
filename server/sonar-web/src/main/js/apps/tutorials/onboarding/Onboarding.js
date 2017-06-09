@@ -34,7 +34,8 @@ type Props = {
 
 type State = {
   organization?: string,
-  step: string
+  step: string,
+  token?: string
 };
 
 export default class Onboarding extends React.PureComponent {
@@ -43,8 +44,7 @@ export default class Onboarding extends React.PureComponent {
 
   constructor(props: Props) {
     super(props);
-    // this.state = { step: props.organizationsEnabled ? 'organization' : 'token' };
-    this.state = { step: 'analysis' };
+    this.state = { step: props.organizationsEnabled ? 'organization' : 'token' };
   }
 
   componentDidMount() {
@@ -53,8 +53,8 @@ export default class Onboarding extends React.PureComponent {
     }
   }
 
-  handleTokenDone = (/* token: string */) => {
-    this.setState({ step: 'analysis' });
+  handleTokenDone = (token: string) => {
+    this.setState({ step: 'analysis', token });
   };
 
   handleOrganizationDone = (organization: string) => {
@@ -67,7 +67,9 @@ export default class Onboarding extends React.PureComponent {
     }
 
     const { organizationsEnabled, sonarCloud } = this.props;
-    const { step } = this.state;
+    const { step, token } = this.state;
+
+    let stepNumber = 1;
 
     return (
       <div className="page page-limited">
@@ -85,16 +87,21 @@ export default class Onboarding extends React.PureComponent {
             currentUser={this.props.currentUser}
             onContinue={this.handleOrganizationDone}
             open={step === 'organization'}
-            stepNumber={1}
+            stepNumber={stepNumber++}
           />}
 
         <TokenStep
           onContinue={this.handleTokenDone}
           open={step === 'token'}
-          stepNumber={organizationsEnabled ? 2 : 1}
+          stepNumber={stepNumber++}
         />
 
-        <AnalysisStep open={step === 'analysis'} stepNumber={organizationsEnabled ? 3 : 2} />
+        <AnalysisStep
+          organization={this.state.organization}
+          open={step === 'analysis'}
+          stepNumber={stepNumber}
+          token={token}
+        />
       </div>
     );
   }
